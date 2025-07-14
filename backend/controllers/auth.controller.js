@@ -32,8 +32,8 @@ export const signup = async (req, res) => {
             });
         }
 
-        if(password.length < 6){
-             return res.status(400).json({
+        if (password.length < 6) {
+            return res.status(400).json({
                 success: false,
                 error: "Password must be at least 6 character long",
             });
@@ -85,13 +85,91 @@ export const signup = async (req, res) => {
 };
 
 export const login = async (req, res) => {
-    res.json({
-        data: "you hit the signup end point",
-    });
+    try {
+        const { username, password } = req.body;
+
+        if (!username || !password) {
+            return res.status(400).json({
+                success: false,
+                error: "username and password are required",
+            });
+        }
+
+        const user = await User.findOne({ username });
+
+        if (!user) {
+            return res.status(400).json({
+                success: false,
+                error: "Invalid username or password",
+            });
+        }
+
+        // checking hashed password
+        const isPasswordCorrect = await bcrypt.compare(password, user.password);
+
+        if (!isPasswordCorrect) {
+            return res.status(400).json({
+                success: false,
+                error: "Invalid username or password",
+            });
+        }
+
+        // if all the checks pass generate token
+
+        generateTokenAndSetCookie(user._id, res);
+
+        res.status(200).json({
+            success: true,
+            data: {
+                _id: user._id,
+                fullName: user.fullName,
+                username: user.username,
+                email: user.email,
+                followers: user.followers,
+                following: user.following,
+                photoImg: user.photoImg,
+                coverImg: user.coverImg,
+            },
+        });
+    } catch (error) {
+        console.error(`Error in Login Controller ${error.message}`);
+        res.status(500).json({
+            success: false,
+            message: "Internal server Error",
+        });
+    }
 };
 
 export const logout = async (req, res) => {
-    res.json({
-        data: "you hit the signup end point",
-    });
+    try {
+        res.cookie("jwtToken", "", { maxAge: 0 });
+        res.status(200).json({
+            success: true,
+            message: "Logged out successfully",
+        });
+    } catch (error) {
+        console.error(`Error in Logout Controller ${error.message}`);
+        res.status(500).json({
+            success: false,
+            message: "Internal server Error",
+        });
+    }
+};
+
+export const getAuthUser = async (req, res) => {
+    try {
+        const { _id } = req.user;
+
+        const user = await User.findById(_id).select("-password");
+        res.status(200).json({
+            success: true,
+            data: user,
+        });
+    } catch (error) {
+        console.error(`Error in getAuthUser Controller ${error.message}`);
+        res.status(500).json({
+            success: false,
+            message: "Internal server Error",
+        });
+    }
 };
