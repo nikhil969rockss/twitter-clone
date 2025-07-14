@@ -11,6 +11,9 @@ const app = express();
 
 const port = process.env.PORT || 4000;
 
+app.use(express.json()); // To parse the req.body
+app.use(express.urlencoded({extended:true})); // to parse the form data(urlencoded)
+
 app.use('/api/auth', authRoutes)
 
 connectToDB(()=>{
