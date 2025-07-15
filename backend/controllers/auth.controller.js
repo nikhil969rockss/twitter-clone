@@ -135,7 +135,7 @@ export const login = async (req, res) => {
         console.error(`Error in Login Controller ${error.message}`);
         res.status(500).json({
             success: false,
-            message: "Internal server Error",
+            error: "Internal server Error",
         });
     }
 };
@@ -151,7 +151,7 @@ export const logout = async (req, res) => {
         console.error(`Error in Logout Controller ${error.message}`);
         res.status(500).json({
             success: false,
-            message: "Internal server Error",
+            error: "Internal server Error",
         });
     }
 };
@@ -169,7 +169,7 @@ export const getAuthUser = async (req, res) => {
         console.error(`Error in getAuthUser Controller ${error.message}`);
         res.status(500).json({
             success: false,
-            message: "Internal server Error",
+            error: "Internal server Error",
         });
     }
 };
