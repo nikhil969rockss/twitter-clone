@@ -69,6 +69,14 @@ export const followUnfollowUser = async (req, res) => {
                 $pull: { following: id },
             });
 
+            // delete it from the notification model
+
+            await Notification.deleteOne({
+                from: req.user._id,
+                to: userToModify._id,
+                type: "follow",
+            });
+
             //TODO: return the id to the user as a response
 
             res.status(200).json({
