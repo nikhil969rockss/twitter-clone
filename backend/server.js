@@ -7,14 +7,13 @@ import { cloudinaryConfig } from "./config/cloudinary.js";
 import connectToDB from "./db/connectToMongoDB.js";
 
 // routes
-import authRoutes from "./routes/auth.routes.js";
-import userRoutes from "./routes/user.routes.js";
-import postRoutes from './routes/post.routes.js'
+import authRoute from "./routes/auth.route.js";
+import userRoute from "./routes/user.route.js";
+import postRoute from "./routes/post.route.js";
 
 dotenv.config();
 
 cloudinaryConfig();
-
 const app = express();
 
 const port = process.env.PORT || 4000;
@@ -24,9 +23,9 @@ app.use(express.urlencoded({ extended: true })); // to parse the form data(urlen
 
 app.use(cookieParser()); // To parse the cookie data
 
-app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/posts", postRoutes);
+app.use("/api/auth", authRoute);
+app.use("/api/users", userRoute);
+app.use("/api/posts", postRoute);
 
 connectToDB(() => {
     app.listen(port, () => {
