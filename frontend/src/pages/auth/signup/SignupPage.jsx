@@ -1,14 +1,16 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 import XSvg from "../../../components/svgs/X";
 
+// react-icons
 import { MdOutlineMail } from "react-icons/md";
 import { FaUser } from "react-icons/fa";
 import { MdPassword } from "react-icons/md";
 import { MdDriveFileRenameOutline } from "react-icons/md";
-import toast from "react-hot-toast";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 const SignUpPage = () => {
     const [formData, setFormData] = useState({
@@ -123,8 +125,12 @@ const SignUpPage = () => {
                             value={formData.password}
                         />
                     </label>
-                    <button className="btn sm:w-2/3 w-full rounded-full btn-primary text-white">
-                        {isPending ? "Loading..." : "Signup"}
+                    <button className="btn sm:w-2/3 w-full flex justify-center items-center rounded-full btn-primary text-white">
+                        {isPending ? (
+                            <AiOutlineLoading3Quarters className="animate-spin" />
+                        ) : (
+                            "Signup"
+                        )}
                     </button>
                     {isError && <p className="text-red-500">{error.message}</p>}
                 </form>

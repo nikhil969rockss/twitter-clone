@@ -1,34 +1,69 @@
-
-
-
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 import XSvg from "../../../components/svgs/X";
 
+// react-icons
 import { MdOutlineMail } from "react-icons/md";
 import { FaUser } from "react-icons/fa";
 import { MdPassword } from "react-icons/md";
 import { MdDriveFileRenameOutline } from "react-icons/md";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+
 
 const SignUpPage = () => {
     const [formData, setFormData] = useState({
-      
         username: "",
-     
+
         password: "",
     });
 
+    const {
+        mutate: loginMutation,
+        error,
+        isPending,
+        isError,
+    } = useMutation({
+        mutationFn: async ({ username, password }) => {
+            try {
+                const res = await fetch("/api/auth/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ username, password }),
+                });
+                const data = await res.json();
+
+                console.log(data);
+                if (!res.ok) throw Error(data.error || "Failed to login");
+
+                return data;
+            } catch (error) {
+                throw new Error(error);
+            }
+        },
+
+        onSuccess: () => {
+            toast.success("Login successfully");
+        },
+        onError: () => {
+            throw new Error("Something went wrong");
+        },
+    });
+
+  
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(formData);
+        loginMutation(formData);
     };
 
     const handleInputChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
-
-    const isError = false;
 
     return (
         <div className="sm:max-w-screen-xl w-full  mx-auto flex h-screen px-10">
@@ -44,7 +79,7 @@ const SignUpPage = () => {
                     <h1 className="text-4xl font-extrabold text-white">
                         Let's Go.
                     </h1>
-                    
+
                     <div className="flex gap-4 flex-col   w-full sm:w-2/3 ">
                         <label className="input  input-bordered rounded flex items-center gap-2 w-full">
                             <MdOutlineMail />
@@ -57,7 +92,6 @@ const SignUpPage = () => {
                                 value={formData.username}
                             />
                         </label>
-                    
                     </div>
                     <label className="input w-full input-bordered sm:w-2/3 rounded flex items-center gap-2">
                         <MdPassword />
@@ -70,12 +104,10 @@ const SignUpPage = () => {
                             value={formData.password}
                         />
                     </label>
-                    <button className="btn sm:w-2/3 w-full rounded-full btn-primary text-white">
-                        Login
+                    <button className="btn sm:w-2/3 w-full flex items-center justify-center rounded-full btn-primary text-white">
+                        {isPending ? <AiOutlineLoading3Quarters className="animate-spin" /> : "Login"}
                     </button>
-                    {isError && (
-                        <p className="text-red-500">Something went wrong</p>
-                    )}
+                    {isError && <p className="text-red-500">{error.message}</p>}
                 </form>
                 <div className="flex flex-col mx-auto   lg:w-2/3 gap-2 mt-4">
                     <p className="text-white text-lg text-center">
